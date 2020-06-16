@@ -2,5 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/lombok-1.18.12.jar" sourcepath="C:/Users/benju/.m2/repository/org/projectlombok/lombok/1.18.12/lombok-1.18.12-sources.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>
