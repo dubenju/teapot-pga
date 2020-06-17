@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 public class FileModel {
     private String fileName = "";
+    private long fileSize = 0;
     /**
      * 1:Text/plan
      * 2:BinaryFile
@@ -43,7 +44,7 @@ public class FileModel {
     }
     public void setFileType(int fileType) {
         this.fileType = fileType;
-        if (this.fileType == Loc.TEXT_ID) {
+//        if (this.fileType == Loc.TEXT_ID) {
             String extensionName = "";
             int dot = this.fileName.lastIndexOf('.');
             int separator1 = this.fileName.lastIndexOf('\\');
@@ -52,7 +53,15 @@ public class FileModel {
             if (dot > separator) { 
                 extensionName = this.fileName.substring(dot + 1);
                 this.fileType = Utils.getExtensionNameId(extensionName.toUpperCase());
+                if("xml".equalsIgnoreCase(extensionName)) {
+//                    System.out.println(extensionName);
+                    String flName = this.fileName.substring(separator + 1, dot);
+//                    System.out.println(flName);
+                    if ("build".equalsIgnoreCase(flName)) {
+                        this.fileType = Utils.getExtensionNameId(this.fileName.substring(separator + 1).toUpperCase());
+                    }
+                }
             }
-        }
+//        }
     }
 }

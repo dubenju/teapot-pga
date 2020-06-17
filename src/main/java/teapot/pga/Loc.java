@@ -1,6 +1,7 @@
 package teapot.pga;
 
 import java.io.File;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -10,6 +11,7 @@ public class Loc {
     public static  final int TEXT_ID = 10000;
     public static  final int BINARY_ID = 20000;
     public static final int PROCESSORS = Runtime.getRuntime().availableProcessors();
+
     public static void main(String[] args) {
         long start = System.currentTimeMillis();
 
@@ -17,43 +19,20 @@ public class Loc {
         model.setStart(start);
 
         Options opts = new Options();
+        opts.set(Options.BY_LANG, Options.ON); // default
         model.setOptions(opts);
-        File filePath = null;
-        for(int i = 0; i < args.length; i ++) {
-            String arg = args[i];
-            String val = "";
-            int eq = arg.indexOf("=");
-            if (eq >= 0) {
-                arg = args[i].substring(0, eq - 1);
-                val = args[i].substring(eq + 1);
-            }
-            if(Options.HELP.equalsIgnoreCase(arg)) {
-                opts.set(Options.HELP, Options.ON);
-                Utils.showUsage();
-                return ;
-            }
-            if(Options.CSV.equalsIgnoreCase(arg)) {
-                opts.set(Options.CSV, Options.ON);
-            }
-            if(Options.CSV_DELIMITER.equalsIgnoreCase(arg)) {
-                opts.set(Options.CSV_DELIMITER, val);
-            }
-            if (i == 0) {
-                filePath = new File(arg);
-                if (!filePath.exists()) {
-                    System.out.println("指定的对象不存在。");
-                    return ;
-                }
-            }
-        }
-        if (filePath == null) {
-            System.out.println("指定的对象不存在。");
+        if(OptionsParser.parse(args, opts) == null) return;
+        List<File> inputFiles = model.getInputs();
+        if (inputFiles == null || inputFiles.size() <= 0) {
             return ;
         }
-        model.setPath(filePath);
 
-        ExecutorService es = Executors.newFixedThreadPool(PROCESSORS * 3);
-        long fileCount = new Loc().proc(filePath, es, model);
+        ExecutorService es = Executors.newFixedThreadPool(PROCESSORS * 2);
+        Loc proc = new Loc();
+        long fileCount = 0;
+        for(File filePath: inputFiles) {
+            fileCount += proc.proc(filePath, es, model);
+        }
         // 关闭线程池:
         es.shutdown();
         try {
@@ -82,13 +61,16 @@ public class Loc {
             if (fileType < Loc.BINARY_ID) {
                 model.countFileCountText();
             } else {
-                //model.countFileCountIgnored();
+                model.countFileCountBinary();
             }
         }
 
         if (opts.isCsv()) {
-            String delimiter = opts.getCsvDelimiter();
-            Report.reportCsv(model, delimiter);
+            Report.reportCsv(model);
+        } else if (opts.isJson()) {
+        } else if (opts.isMd()) {
+        } else if (opts.isXml()) {
+        } else if (opts.isYaml()) {
         } else {
             Report.report(model);
         }
@@ -98,20 +80,48 @@ public class Loc {
 
     public long proc(File path, ExecutorService es, LocModel model) {
         long res = 0;
-        File[] fs = path.listFiles();
-        for(File f:fs){
-            if(f.isDirectory()) {
-                //若是目录，则递归打印该目录下的文件
-                res += proc(f, es, model);
+        if (OptionsParser.isSkip(path, model.getOptions())) {
+            model.countFileCountSkiped();
+            return res;
+        }
+        if(path.isDirectory()) {
+            File[] fs = path.listFiles();
+            for(File f:fs){
+                if(f.isDirectory()) {
+                    //若是目录，则递归打印该目录下的文件
+                    model.countFolderCount();
+                    res += proc(f, es, model);
+                }
+    
+                if(f.isFile()) {
+                    if (f.length() <= 0) {
+                        // zero sized file is ignored.
+                        model.countFileCountIgnored();
+                        model.addIgnoredFile(f.getAbsolutePath());
+                        continue ;
+                    }
+                    res ++;
+                    String fileName = f.getAbsolutePath();
+                    FileModel result = new FileModel(fileName);
+                    result.setFileSize(f.length());
+                    model.addFile(fileName, result);
+                    es.submit(new AnalyzeFileTask(fileName, f, result));
+                }
             }
-
-            if(f.isFile()) {
-                res ++;
-                String fileName = f.getAbsolutePath();
-                FileModel result = new FileModel(fileName);
-                model.addFile(fileName, result);
-                es.submit(new AnalyzeFileTask(fileName, f, result));
+        }
+        if(path.isFile()) {
+            if (path.length() <= 0) {
+                // zero sized file is ignored.
+                model.countFileCountIgnored();
+                model.addIgnoredFile(path.getAbsolutePath());
+                return res;
             }
+            res ++;
+            String fileName = path.getAbsolutePath();
+            FileModel result = new FileModel(fileName);
+            result.setFileSize(path.length());
+            model.addFile(fileName, result);
+            es.submit(new AnalyzeFileTask(fileName, path, result));
         }
         return res;
     }

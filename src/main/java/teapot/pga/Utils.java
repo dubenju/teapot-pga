@@ -1,7 +1,11 @@
 package teapot.pga;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
+import java.io.InputStreamReader;
 import java.util.HashMap;
 
 public class Utils {
@@ -57,7 +61,7 @@ public class Utils {
         exNameId.put("AMPLE", 10006); // AMPLE
         exNameId.put("DOFILE", 10006); // AMPLE
         exNameId.put("STARTUP", 10006); // AMPLE
-        exNameId.put("BUILD.XML", 10007); // Ant
+        exNameId.put("BUILD.XML", 10007); // Ant   10007
         exNameId.put("BUILD.XML", 10007); // Ant
         exNameId.put("G", 10008); // ANTLRGrammar
         exNameId.put("G4", 10008); // ANTLRGrammar
@@ -901,11 +905,29 @@ public class Utils {
 
 
         exNameId.put("PROPERTIES" , 10263);
+        exNameId.put("TLOG" , 10264);
+        exNameId.put("LOG" , 10264);
+        exNameId.put("LASTBUILDSTATE" , 10000);
+        exNameId.put("TXT" , 10000);
+        exNameId.put("SLN" , 10265); // Microsoft Visual Studio Solution
 
         // 
         exNameId.put("CLASS", 20001);
         exNameId.put("JAR"  , 20002);
         exNameId.put("ZIP"  , 20003);
+        exNameId.put("IDX"  , 20004);
+        exNameId.put("PACK" , 20005);
+        exNameId.put("EXE"  , 20006);
+        exNameId.put("ILK"  , 20007); // Incremental Linker File
+        exNameId.put("PDB"  , 20008); // Program Debug Database
+        exNameId.put("IPCH" , 20009); // EDG C/C++ version
+        exNameId.put("OBJ"  , 20010); // Object File
+        exNameId.put("PCH"  , 20011); // Precompiled Header File
+        exNameId.put("RES"  , 20012); // Compiled Resource Script
+        exNameId.put("IDB"  , 20013); // VC++ Minimum Rebuild Dependency File
+        exNameId.put("ICO"  , 20014); // ICON
+        exNameId.put("SDF"  , 20015); // SQL Server Compact Edition Database File
+        
     }
     public static int getExtensionNameId(String extensionName) {
         Integer res = exNameId.get(extensionName);
@@ -918,6 +940,7 @@ public class Utils {
     }
     private static HashMap<Integer, String> exIdName = new HashMap<Integer, String>();
     static {
+        exIdName.put(-1, "language unknown (#3)");
         exIdName.put(10000, "TEXT");
         
         exIdName.put(10001, "ABAP");
@@ -1184,11 +1207,25 @@ public class Utils {
         exIdName.put(10262, "zsh");
         
         exIdName.put(10263, "PROPERTIES");
+        exIdName.put(10264, "LOG");
+        exIdName.put(10265, "SLN"); // Microsoft Visual Studio Solution
         
         exIdName.put(20000, "Binary");
         exIdName.put(20001, "CLASS");
         exIdName.put(20002, "JAR");
         exIdName.put(20003, "ZIP");
+        exIdName.put(20004, "IDX");
+        exIdName.put(20005, "PACK");
+        exIdName.put(20006, "EXE");
+        exIdName.put(20007, "ILK");// Incremental Linker File
+        exIdName.put(20008, "PDB");// Program Debug Database
+        exIdName.put(20009, "IPCH");// EDG C/C++ version
+        exIdName.put(20010, "OBJ");// Object File
+        exIdName.put(20011, "PCH");// Precompiled Header File
+        exIdName.put(20012, "RES");// Compiled Resource Script
+        exIdName.put(20013, "IDB");// VC++ Minimum Rebuild Dependency File
+        exIdName.put(20014, "ICO");// ICON
+        exIdName.put(20015, "SDF");// SQL Server Compact Edition Database File
 
     }
     public static String getLanguageName(int id) {
@@ -1200,7 +1237,59 @@ public class Utils {
         }
         return res;
     }
+    public static boolean writeFile(String option, LocModel model) {
+        boolean res = false;
+        String fileName = "";
+        if (Options.IGNORED.equals(option)) {
+            fileName = model.getOptions().getOutIgnored();
+        }
+        if (Options.FOUND.equals(option)) {
+            fileName = model.getOptions().getOutFound();
+        }
+        if (Options.CATEGORIZED.equals(option)) {
+            fileName = model.getOptions().getOutCategorized();
+        }
+        if (Options.COUNTED.equals(option)) {
+            fileName = model.getOptions().getOutCounted();
+        }
+//        if (Options.REPORT_FILE.equals(option)) {
+//            fileName = model.getOptions().getOutReportFile();
+//        }
+
+        try { // 防止文件建立或读取失败，用catch捕捉错误并打印，也可以throw
+            /* 写入Txt文件 */
+            File writename = new File(fileName); // 相对路径，如果没有则要建立一个新的output。txt文件
+            writename.createNewFile(); // 创建新文件
+            BufferedWriter out = new BufferedWriter(new FileWriter(writename));
+            if (Options.IGNORED.equals(option)) {
+                for(String str: model.getFilesIgnored()) {
+                    out.write(str + ": zero sized file\r\n"); // \r\n即为换行
+                }
+            }
+            if (Options.FOUND.equals(option)) {
+                for(FileModel mdl: model.getResults().values()) {
+                    out.write(mdl.getFileName() + "\r\n"); // \r\n即为换行
+                }
+            }
+            if (Options.COUNTED.equals(option)) {
+                for(FileModel mdl: model.getResults().values()) {
+                    out.write(mdl.getFileName() + "\r\n"); // \r\n即为换行
+                }
+            }
+            if (Options.CATEGORIZED.equals(option)) {
+                for(FileModel mdl: model.getResults().values()) {
+                    out.write(mdl.getFileSize() + "," +Utils.getLanguageName(mdl.getFileType()) + "," + mdl.getFileName() + "\r\n"); // \r\n即为换行
+                }
+            }
+            out.flush(); // 把缓存区内容压入文件
+            out.close(); // 最后记得关闭文件
+            res = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return res;
+    }
     public static void showUsage() {
-        
+        System.out.println("Usage:");
     }
 }
