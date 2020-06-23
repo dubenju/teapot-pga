@@ -1,0 +1,15 @@
+.\build\mktst.bat teapot.pga.AnalyzeFileTask
+.\build\mktst.bat teapot.pga.Analyzer
+.\build\mktst.bat teapot.pga.AnalyzerBinary
+.\build\mktst.bat teapot.pga.AnalyzerHtml
+.\build\mktst.bat teapot.pga.AnalyzerJava
+.\build\mktst.bat teapot.pga.Analyzers
+.\build\mktst.bat teapot.pga.FileModel
+.\build\mktst.bat teapot.pga.Loc
+.\build\mktst.bat teapot.pga.LocModel
+.\build\mktst.bat teapot.pga.Options
+.\build\mktst.bat teapot.pga.OptionsParser
+.\build\mktst.bat teapot.pga.Report$1
+.\build\mktst.bat teapot.pga.Report
+.\build\mktst.bat teapot.pga.SumModel
+.\build\mktst.bat teapot.pga.Utils

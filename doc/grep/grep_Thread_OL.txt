@@ -1,0 +1,28 @@
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\pga\Loc.java(30):         ExecutorService es = Executors.newFixedThreadPool(PROCESSORS * 2);
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\AnalyzeFileTaskTest.java(14):         ExecutorService es = Executors.newFixedThreadPool(1);
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(3): public class NotThreadSafe {
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(7):             Thread.sleep(200);
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(15):             Thread.sleep(200);
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(25):         NotThreadSafe sharedInstance = new NotThreadSafe();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(27):         new Thread(new 母鸡(sharedInstance), "母鸡A").start();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(28):         new Thread(new 母鸡(sharedInstance), "母鸡B").start();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(29):         System.out.println("☆" + Thread.currentThread().getName() + ":" + sharedInstance.get鸡蛋数量());
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(31):         NotThreadSafe sharedInstance1 = new NotThreadSafe();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(33):         new Thread(new 母鸡1(sharedInstance1), "母鸡1A").start();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(34):         new Thread(new 母鸡1(sharedInstance1), "母鸡1B").start();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\NotThreadSafe.java(35):         System.out.println("☆" + Thread.currentThread().getName() + ":" + sharedInstance1.get鸡蛋数量());
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\PackageUtil.java(41):         ClassLoader loader = Thread.currentThread().getContextClassLoader();  
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\ThreadException.java(3): import java.lang.Thread.UncaughtExceptionHandler;
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\ThreadException.java(5): public class ThreadException {
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\ThreadException.java(8):         Thread t = new Thread();
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\ThreadException.java(12):             public void uncaughtException(Thread t, Throwable e) {
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡.java(4):     NotThreadSafe instance = null;
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡.java(6):     public 母鸡(NotThreadSafe instance){
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡.java(13):             System.out.println(">" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量() + "=>");
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡.java(15):             System.out.println("<" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量());
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡.java(17):         System.out.println("★" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量() + "执行总时间:" + (System.currentTimeMillis() - startTime));
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡1.java(4):     NotThreadSafe instance = null;
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡1.java(6):     public 母鸡1(NotThreadSafe instance){
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡1.java(13):             System.out.println(">" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量() + "=>");
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡1.java(15):             System.out.println("<" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量());
+C:\Users\benju\git\teapot-pga\src\main\java\teapot\test\母鸡1.java(17):         System.out.println("★" + Thread.currentThread().getName() + ":" + this.instance.get鸡蛋数量() + "执行总时间:" + (System.currentTimeMillis()-startTime));
